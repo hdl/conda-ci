@@ -33,7 +33,37 @@ end_section "conda.build"
 $SPACER
 
 start_section "conda.build" "${GREEN}Installing..${NC}"
+# Remove channels before testing installation if requested
+echo "Channel and channel_priority configuration:"
+conda config --show channels
+conda config --show channel_priority
+echo
+echo "Configuration sources:"
+conda config --show-sources
+echo
+if [[ "$BUILDONLY_CHANNELS" != "" ]]; then
+    echo "Removing BUILDONLY_CHANNELS ('$BUILDONLY_CHANNELS') before installation test..."
+    echo
+    for CHANNEL in $BUILDONLY_CHANNELS; do
+        if conda config --show channels | grep "$CHANNEL" &>/dev/null; then
+            for CONDARC_FILE in $(conda config --show-sources | egrep '==> .+ <==' | cut -d' ' -f2); do
+                if grep "$CHANNEL" "$CONDARC_FILE" &>/dev/null; then
+                    echo -n "Removing '$CHANNEL' from '$CONDARC_FILE'."
+                    conda config --file "$CONDARC_FILE" --remove channels $CHANNEL
+                fi
+            done
+        else
+            echo "WARNING: Conda wouldn't use '$CHANNEL' channel anyway!"
+        fi
+    done
+    echo
+    echo "Channel configuration after removing BUILDONLY_CHANNELS:"
+    conda config --show channels
+    echo
+fi
+# Install the package and its dependencies (not installed by default for local packages)
 conda install $CONDA_OUT
+conda update --only-deps $PACKAGE_NAME
 end_section "conda.build"
 
 $SPACER

@@ -146,9 +146,11 @@ if [ -d "workdir/recipe" ]; then
         # 'git bash' used by Travis works well with wildcards only in Unix-style paths
         export CONDA_OUT="$(cygpath -u $CONDA_OUT)"
     fi
+    PACKAGE_NAME="$(echo $CONDA_OUT | sed -e 's#^/.*/##' -e 's/-[^-]*-[^-]*\.tar\.bz2$//')"
 fi
 
 echo "          GITREV: $GITREV"
 echo "      CONDA_PATH: $CONDA_PATH"
 echo "CONDA_BUILD_ARGS: $CONDA_BUILD_ARGS"
 echo "       CONDA_OUT: $CONDA_OUT"
+echo "    PACKAGE_NAME: $PACKAGE_NAME"
