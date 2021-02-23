@@ -25,10 +25,8 @@ python -m pip install git+https://github.com/litex-hub/conda-build-prepare@v0.1.
 # The last channel will be on top of the environment's channel list
 ADDITIONAL_CHANNELS="litex-hub $ANACONDA_USER $ANACONDA_USER/label/ci-$branch-$GITHUB_RUN_ID"
 
-ADDITIONAL_PACKAGES="conda-build=3.20.3 conda-verify jinja2 pexpect python=3.7"
-if [[ "$OS_NAME" != 'windows' ]]; then
-    ADDITIONAL_PACKAGES="$ADDITIONAL_PACKAGES ripgrep"
-fi
+# Lock conda-build version
+ADDITIONAL_PACKAGES="conda-build=3.20.3"
 
 # Prepare the recipe and create workdir/conda-env to be activated
 python -m conda_build_prepare --channels $ADDITIONAL_CHANNELS --packages $ADDITIONAL_PACKAGES --dir workdir $PACKAGE
